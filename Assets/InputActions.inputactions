@@ -156,6 +156,34 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "Hack",
+            "id": "f9fe8b11-eb0f-4d26-84c8-6821e3c6e5d0",
+            "actions": [
+                {
+                    "name": "CurseAllObjects",
+                    "type": "Button",
+                    "id": "252ff0c2-1b91-4c45-8323-6341ed15ee6c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f82f6c30-e251-40fb-9d1a-a5132b4dccb4",
+                    "path": "<Keyboard>/numpad1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CurseAllObjects",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
