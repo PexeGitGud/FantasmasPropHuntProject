@@ -18,7 +18,7 @@ public class CursableObject : MonoBehaviour
         if (cursed)
         {
             transform.DOMoveY(ogPos.y + .25f, .5f).SetEase(Ease.InOutSine).OnComplete(()=>transform.DOMoveY(ogPos.y + .75f, .75f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo));
-            transform.DOShakeRotation(5, 50, 1, 90, false, ShakeRandomnessMode.Full).SetRelative().SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Incremental);
+            transform.DOShakeRotation(5, 10, 1, 90, false, ShakeRandomnessMode.Full).SetRelative().SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Incremental);
             return;
         }
 
