@@ -476,10 +476,17 @@ PlayerSettings:
       m_Kind: 4
       m_SubKind: App Store
   m_BuildTargetBatching: []
-  m_BuildTargetShaderSettings: []
+  m_BuildTargetShaderSettings:
+  - m_BuildTarget: Standalone
+    m_ChunkSizeInMB: 16
+    m_MaxChunks: 0
+    m_OverrideDefaultSettings: 0
   m_BuildTargetGraphicsJobs: []
   m_BuildTargetGraphicsJobMode: []
-  m_BuildTargetGraphicsAPIs: []
+  m_BuildTargetGraphicsAPIs:
+  - m_BuildTarget: WindowsStandaloneSupport
+    m_APIs: 02000000
+    m_Automatic: 1
   m_BuildTargetVRSettings: []
   m_DefaultShaderChunkSizeInMB: 16
   m_DefaultShaderChunkCount: 0
@@ -803,7 +810,7 @@ PlayerSettings:
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: FantasmasPropHuntProject
-  metroPackageVersion: 
+  metroPackageVersion: 1.0.0.0
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
@@ -811,7 +818,7 @@ PlayerSettings:
   metroCertificateNotAfter: 0000000000000000
   metroApplicationDescription: FantasmasPropHuntProject
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: FantasmasPropHuntProject
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0
