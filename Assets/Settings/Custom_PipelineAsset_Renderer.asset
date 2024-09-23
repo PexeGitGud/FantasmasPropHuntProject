@@ -33,7 +33,7 @@ MonoBehaviour:
     stencilSettings:
       overrideStencilState: 0
       stencilReference: 0
-      stencilCompareFunction: 8
+      stencilCompareFunction: 5
       passOperation: 0
       failOperation: 0
       zFailOperation: 0
@@ -125,8 +125,8 @@ MonoBehaviour:
     overrideMaterialPassIndex: 0
     overrideShader: {fileID: 0}
     overrideShaderPassIndex: 0
-    overrideMode: 1
-    overrideDepthState: 1
+    overrideMode: 0
+    overrideDepthState: 0
     depthCompareFunction: 4
     enableWrite: 1
     stencilSettings:

@@ -158,6 +158,34 @@
             ]
         },
         {
+            "name": "Interaction",
+            "id": "bb92f17f-5656-449c-9163-95b91503b23e",
+            "actions": [
+                {
+                    "name": "MainInteraction",
+                    "type": "Button",
+                    "id": "a2f76911-5e61-4c0d-b165-3ba4b578b0b6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e28198ba-ff65-4a5c-bcf1-611fa9a6fd47",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MainInteraction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "Hack",
             "id": "f9fe8b11-eb0f-4d26-84c8-6821e3c6e5d0",
             "actions": [
@@ -165,6 +193,24 @@
                     "name": "CurseAllObjects",
                     "type": "Button",
                     "id": "252ff0c2-1b91-4c45-8323-6341ed15ee6c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Respawn",
+                    "type": "Button",
+                    "id": "0242a019-d2b3-4dea-a44c-d33eba5da65f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CloseGame",
+                    "type": "Button",
+                    "id": "04060ae0-d1aa-441b-a68a-f7666de33673",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -180,6 +226,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "CurseAllObjects",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "66b57a32-3eea-4de3-92e1-8c698bea2335",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CurseAllObjects",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b93cffe0-1aca-4bec-ae5a-f25bbaf3d5ac",
+                    "path": "<Keyboard>/numpad0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "09695fa1-be4f-4ae4-8764-765f7831e644",
+                    "path": "<Keyboard>/0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eaf8d073-3c61-4d11-a413-3df685b44043",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseGame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

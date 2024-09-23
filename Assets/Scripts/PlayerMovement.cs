@@ -3,14 +3,14 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    PlayerManager playerManager;
+
     CharacterController characterController;
     Vector2 movementInput;
     Vector3 moveDirection;
     Vector2 lookInput;
     float verticalLookRot;
 
-    [SerializeField]
-    Transform cameraTransform;
     [SerializeField]
     float movementSpeed = 5;
     [SerializeField]
@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        playerManager = GetComponent<PlayerManager>();
         characterController = GetComponent<CharacterController>();
     }
 
@@ -47,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
         #region Look and Rotation
         verticalLookRot += lookInput.y * lookSpeed;
         verticalLookRot = Mathf.Clamp(verticalLookRot, -verticalLookLimit, verticalLookLimit);
-        cameraTransform.localRotation = Quaternion.Euler(-verticalLookRot, 0, 0);
+        playerManager.cameraTransform.localRotation = Quaternion.Euler(-verticalLookRot, 0, 0);
         transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
         #endregion
     }

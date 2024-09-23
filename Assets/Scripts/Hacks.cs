@@ -15,4 +15,24 @@ public class Hacks : MonoBehaviour
         foreach (CursableObject co in FindObjectsOfType<CursableObject>())
             co.PlayCursedAnimation(curseAllObjectsState);
     }
+
+    public void Respawn(InputAction.CallbackContext inputContext)
+    {
+        if(!inputContext.started)
+            return;
+
+        foreach(Interactable i in FindObjectsOfType<Interactable>())
+            i.CanInteract(false);
+
+        GameManager.instance.ShowPlayerSelection();
+        Destroy(gameObject);
+    }
+
+    public void CloseGame(InputAction.CallbackContext inputContext)
+    {
+        if (!inputContext.started)
+            return;
+
+        Application.Quit();
+    }
 }
