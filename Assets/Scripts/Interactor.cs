@@ -21,6 +21,8 @@ public class Interactor : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!playerManager.cameraTransform) return;
+
         Ray r = new Ray(playerManager.cameraTransform.position, playerManager.cameraTransform.forward);
         RaycastHit hit = new RaycastHit();
 

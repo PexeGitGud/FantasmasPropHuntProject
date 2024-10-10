@@ -1,25 +1,22 @@
 using UnityEngine;
+using Mirror;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
-    public bool isGhostClass { get; private set; } = false;
-
+    [SyncVar(hook = nameof(OnClassChange))]
+    public bool isGhostClass;
     public Transform cameraTransform {  get; private set; }
-
-    [SerializeField]
-    GameObject ghostVisuals;
-    [SerializeField]
-    GameObject hunterVisuals;
+    public MeshRenderer hunterMeshRenderer, ghostMeshRenderer;
 
     void Start()
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
-    public void SelectClass(bool isGhostClass)
+    void OnClassChange(bool oldClass, bool newClass)
     {
-        this.isGhostClass = isGhostClass;
-        Instantiate(isGhostClass ? ghostVisuals : hunterVisuals, transform);
+        ghostMeshRenderer.enabled = newClass;
+        hunterMeshRenderer.enabled = !newClass;
     }
 }

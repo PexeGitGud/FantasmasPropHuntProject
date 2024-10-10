@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Mirror;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     PlayerManager playerManager;
 
@@ -28,8 +29,21 @@ public class PlayerMovement : MonoBehaviour
         characterController = GetComponent<CharacterController>();
     }
 
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+
+        GetComponent<PlayerInput>().enabled = true;
+        GetComponentInChildren<Camera>().enabled = true;
+        GetComponentInChildren<AudioListener>().enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
     void Update()
     {
+        if (!isLocalPlayer) return;
+
         #region Movement
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
@@ -48,7 +62,8 @@ public class PlayerMovement : MonoBehaviour
         #region Look and Rotation
         verticalLookRot += lookInput.y * lookSpeed;
         verticalLookRot = Mathf.Clamp(verticalLookRot, -verticalLookLimit, verticalLookLimit);
-        playerManager.cameraTransform.localRotation = Quaternion.Euler(-verticalLookRot, 0, 0);
+        if(playerManager.cameraTransform)
+            playerManager.cameraTransform.localRotation = Quaternion.Euler(-verticalLookRot, 0, 0);
         transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
         #endregion
     }

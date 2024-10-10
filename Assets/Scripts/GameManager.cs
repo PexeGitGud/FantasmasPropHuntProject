@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
@@ -49,7 +48,6 @@ public class GameManager : MonoBehaviour
     {
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)].transform;
         PlayerManager spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        spawnedPlayer.SelectClass(true);
         classSelectionCamera.SetActive(false);
         classSelectionPanel.SetActive(false);
         playerUI.SetActive(true);
@@ -62,7 +60,6 @@ public class GameManager : MonoBehaviour
     {
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)].transform;
         PlayerManager spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        spawnedPlayer.SelectClass(false);
         classSelectionCamera.SetActive(false);
         classSelectionPanel.SetActive(false);
         playerUI.SetActive(true);
