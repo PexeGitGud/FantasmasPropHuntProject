@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
+using Mirror;
 
-public class Interactable : MonoBehaviour
+public class Interactable : NetworkBehaviour
 {
     [SerializeField]
     GameObject outlineableObject;
@@ -25,11 +26,17 @@ public class Interactable : MonoBehaviour
         outlineableObject.layer = value ? outlineLayerInt : defaultLayerInt;
     }
 
-    public void Interact(bool isGhostClass)
+    [ClientRpc]
+    public void RpcInteract(PlayerClass playerClass)
     {
-        if (isGhostClass)
-            ghostInteractionEvent.Invoke();
-        else
-            hunterInteractionEvent.Invoke();
+        switch (playerClass)
+        {
+            case PlayerClass.Hunter:
+                hunterInteractionEvent.Invoke();
+                break;
+            case PlayerClass.Ghost:
+                ghostInteractionEvent.Invoke();
+                break;
+        }
     }
 }

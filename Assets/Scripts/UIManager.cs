@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
 
         NetManager.CreatePlayerMessage createPlayerMessage = new NetManager.CreatePlayerMessage
         {
-            isGhostClass = true
+            playerClass = PlayerClass.Ghost
         };
         NetManager.singleton.CreatePlayer(createPlayerMessage);
 
@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
 
         NetManager.CreatePlayerMessage createPlayerMessage = new NetManager.CreatePlayerMessage
         {
-            isGhostClass = false
+            playerClass = PlayerClass.Hunter
         };
         NetManager.singleton.CreatePlayer(createPlayerMessage);
 

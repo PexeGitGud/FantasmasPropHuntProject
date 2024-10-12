@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Mirror;
 
-public class Interactor : MonoBehaviour
+public class Interactor : NetworkBehaviour
 {
     PlayerManager playerManager;
 
@@ -51,8 +52,14 @@ public class Interactor : MonoBehaviour
 
     public void PlayerMainInteraction(InputAction.CallbackContext inputContext)
     {
-        if (inputContext.performed)
-            lastInteractable?.Interact(playerManager.isGhostClass);
+        if (isLocalPlayer && inputContext.performed)
+            CmdPlayerMainInteraction();
+    }
+
+    [Command]
+    void CmdPlayerMainInteraction()
+    {
+        lastInteractable?.RpcInteract(playerManager.playerClass);
     }
 
     private void OnDrawGizmosSelected()
