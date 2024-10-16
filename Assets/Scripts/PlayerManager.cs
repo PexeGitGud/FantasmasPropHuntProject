@@ -9,6 +9,7 @@ public class PlayerManager : NetworkBehaviour
     public PlayerClass playerClass;
     public Transform cameraTransform {  get; private set; }
     public MeshRenderer hunterMeshRenderer, ghostMeshRenderer;
+    public GameObject hunterLantern;
 
     void Start()
     {
@@ -22,11 +23,24 @@ public class PlayerManager : NetworkBehaviour
             case PlayerClass.Hunter:
                 hunterMeshRenderer.enabled = true;
                 ghostMeshRenderer.enabled = false;
+                hunterLantern.SetActive(true);
                 break;
             case PlayerClass.Ghost:
                 hunterMeshRenderer.enabled = false;
                 ghostMeshRenderer.enabled = true;
+                hunterLantern.SetActive(false);
                 break;
         }
+    }
+
+    public void DestroyPlayer()
+    {
+        CmdDestroyPlayer();
+    }
+
+    [Command]
+    void CmdDestroyPlayer()
+    {
+        NetworkServer.Destroy(gameObject);
     }
 }

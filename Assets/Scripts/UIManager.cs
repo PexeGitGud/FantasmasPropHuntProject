@@ -5,6 +5,20 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    #region Singleton
+    public static UIManager singleton { get; internal set; }
+
+    void Awake()
+    {
+        if (singleton)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        singleton = this;
+    }
+    #endregion
+
     public GameObject classSelectionCamera, classSelectionPanel, playerUI;
     public Button ghostButton, hunterButton;
     public TMP_Text playerClassText;
@@ -15,6 +29,8 @@ public class UIManager : MonoBehaviour
     {
         ghostButton.onClick.AddListener(SpawnGhostButton);
         hunterButton.onClick.AddListener(SpawnHunterButton);
+
+        OpenClassSelectionPanel();
     }
 
     void SpawnGhostButton()
@@ -54,5 +70,14 @@ public class UIManager : MonoBehaviour
         classSelectionCamera.SetActive(false);
         classSelectionPanel.SetActive(false);
         playerUI.SetActive(true);
+    }
+
+    public void OpenClassSelectionPanel()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        classSelectionCamera.SetActive(true);
+        classSelectionPanel.SetActive(true);
+        playerUI.SetActive(false);
+        playerClassText.SetText("");
     }
 }

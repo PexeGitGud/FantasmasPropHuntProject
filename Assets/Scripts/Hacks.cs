@@ -24,8 +24,8 @@ public class Hacks : MonoBehaviour
         foreach(Interactable i in FindObjectsOfType<Interactable>())
             i.CanInteract(false);
 
-        GameManager.instance.ShowPlayerSelection();
-        Destroy(gameObject);
+        UIManager.singleton.OpenClassSelectionPanel();
+        GetComponent<PlayerManager>().DestroyPlayer();
     }
 
     public void CloseGame(InputAction.CallbackContext inputContext)
