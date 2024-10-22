@@ -187,8 +187,9 @@ GameObject:
   - component: {fileID: 6083141349907890589}
   - component: {fileID: 4332585662760475337}
   - component: {fileID: 7756206396896380451}
+  - component: {fileID: 874663382061653484}
   m_Layer: 0
-  m_Name: Lantern
+  m_Name: Flashlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -365,6 +366,22 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &874663382061653484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2615444614441709054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51149c32b69fd264cb85a3db9dabaaa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spotLight: {fileID: 4332585662760475337}
+  angle: 25
+  depth: 10
+  radius: 10
 --- !u!1 &2626081781731733373
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,7 +615,7 @@ GameObject:
   - component: {fileID: 4476699101633068332}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

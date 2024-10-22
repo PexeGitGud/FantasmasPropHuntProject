@@ -34,6 +34,15 @@ public class NetManager : NetworkManager
         player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
 
         player.GetComponent<PlayerManager>().playerClass = message.playerClass;
+        switch (message.playerClass)
+        {
+            case PlayerClass.Hunter:
+                player.tag = "Hunter";
+                break;
+            case PlayerClass.Ghost:
+                player.tag = "Ghost";
+                break;
+        }
 
         NetworkServer.AddPlayerForConnection(conn, player);
     }

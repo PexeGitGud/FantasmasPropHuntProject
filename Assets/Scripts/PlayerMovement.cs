@@ -11,9 +11,12 @@ public class PlayerMovement : NetworkBehaviour
     Vector3 moveDirection;
     Vector2 lookInput;
     float verticalLookRot;
+    float movementSpeedModifier = 1;
 
     [SerializeField]
     float movementSpeed = 5;
+    [SerializeField]
+    float slowModifier = .5f;
     [SerializeField]
     float jumpPower = 5;
     [SerializeField]
@@ -48,7 +51,7 @@ public class PlayerMovement : NetworkBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
         float moveDirectionY = moveDirection.y;
-        moveDirection = (forward * movementInput.y * movementSpeed) + (right * movementInput.x * movementSpeed);
+        moveDirection = (forward * movementInput.y + right * movementInput.x) * movementSpeed * movementSpeedModifier;
         #endregion
 
         #region Gravity
@@ -82,5 +85,10 @@ public class PlayerMovement : NetworkBehaviour
     public void PlayerLook(InputAction.CallbackContext inputContext)
     {
         lookInput = inputContext.ReadValue<Vector2>();
+    }
+
+    public void FlashlightSlowdown(bool slowing)
+    {
+        movementSpeedModifier = slowing ? slowModifier : 1;
     }
 }
