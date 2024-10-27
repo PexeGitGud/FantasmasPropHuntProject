@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Mirror;
+using DG.Tweening;
 
 public class PlayerMovement : NetworkBehaviour
 {
@@ -11,12 +12,16 @@ public class PlayerMovement : NetworkBehaviour
     Vector3 moveDirection;
     Vector2 lookInput;
     float verticalLookRot;
-    float movementSpeedModifier = 1;
+
+    [SyncVar]
+    bool flashlightSlowdown = false;
+    [SyncVar]
+    public bool respawning = false;
 
     [SerializeField]
     float movementSpeed = 5;
     [SerializeField]
-    float slowModifier = .5f;
+    float slowdpwnModifier = .5f;
     [SerializeField]
     float jumpPower = 5;
     [SerializeField]
@@ -26,10 +31,18 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     float verticalLookLimit = 60;
 
+    Tween slowShakeTween;// => transform.GetChild(0).DOShakeRotation(.5f, 5, 10, 90, true, ShakeRandomnessMode.Harmonic).SetRelative().SetEase(Ease.InOutElastic);
+
     void Start()
     {
         playerManager = GetComponent<PlayerManager>();
         characterController = GetComponent<CharacterController>();
+
+        #region DOTween
+        DOTween.Init();
+        slowShakeTween = transform.GetChild(0).DOShakeRotation(.5f, 5, 10, 90, true, ShakeRandomnessMode.Harmonic).SetRelative().SetEase(Ease.InOutElastic);
+        slowShakeTween.onComplete = () => slowShakeTween.Rewind();
+        #endregion
     }
 
     public override void OnStartLocalPlayer()
@@ -45,13 +58,18 @@ public class PlayerMovement : NetworkBehaviour
 
     void Update()
     {
+        if (respawning) return;
+
+        if (flashlightSlowdown && !slowShakeTween.IsPlaying())
+            slowShakeTween.Play();
+
         if (!isLocalPlayer) return;
 
         #region Movement
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
         float moveDirectionY = moveDirection.y;
-        moveDirection = (forward * movementInput.y + right * movementInput.x) * movementSpeed * movementSpeedModifier;
+        moveDirection = (forward * movementInput.y + right * movementInput.x) * movementSpeed * (flashlightSlowdown ? slowdpwnModifier : 1);
         #endregion
 
         #region Gravity
@@ -65,7 +83,7 @@ public class PlayerMovement : NetworkBehaviour
         #region Look and Rotation
         verticalLookRot += lookInput.y * lookSpeed;
         verticalLookRot = Mathf.Clamp(verticalLookRot, -verticalLookLimit, verticalLookLimit);
-        if(playerManager.cameraTransform)
+        if (playerManager.cameraTransform)
             playerManager.cameraTransform.localRotation = Quaternion.Euler(-verticalLookRot, 0, 0);
         transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
         #endregion
@@ -87,8 +105,15 @@ public class PlayerMovement : NetworkBehaviour
         lookInput = inputContext.ReadValue<Vector2>();
     }
 
-    public void FlashlightSlowdown(bool slowing)
+    [Server]
+    public void ServerFlashlightSlowdown(bool slowing)
     {
-        movementSpeedModifier = slowing ? slowModifier : 1;
+        flashlightSlowdown = slowing;
+    }
+
+    [Command]
+    public void CmdRespawn()
+    {
+        respawning = false;
     }
 }

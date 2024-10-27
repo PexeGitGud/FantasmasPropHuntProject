@@ -7,8 +7,22 @@ public class HunterFlashlight : MonoBehaviour
     public float depth = 10;
     public float radius = 10;
 
+    Light spotLight;
+
+    public bool lightOn { get; private set; } = true;
+    bool insideAnotherObject = false;
+    int nTriggers = 0;
+
+    void Start()
+    {
+        spotLight = GetComponent<Light>();
+    }
+
     void Update()
     {
+        if (!spotLight.enabled)
+            return;
+
         RaycastHit[] coneHits = ConeCastAll(transform.position, radius, transform.forward, depth, angle, "Ghost");
 
         if (coneHits.Length > 0)
@@ -16,7 +30,9 @@ public class HunterFlashlight : MonoBehaviour
             for (int i = 0; i < coneHits.Length; i++)
             {
                 //do something with collider information
-                coneHits[i].collider.GetComponent<PlayerManager>().FlashlightBanishment();
+                PlayerManager pm = coneHits[i].collider.GetComponent<PlayerManager>();
+                if(pm && pm.isServer)
+                    pm.ServerFlashlightBanishment();
             }
         }
     }
@@ -39,7 +55,9 @@ public class HunterFlashlight : MonoBehaviour
 
                 if (angleToHit < coneAngle)
                 {
-                    coneCastHitList.Add(sphereCastHits[i]);
+                    if (Physics.Raycast(origin, directionToHit, out RaycastHit hit)) //Check if behind wall or other blocking objects
+                        if (hit.collider.gameObject.CompareTag(tag))
+                            coneCastHitList.Add(sphereCastHits[i]);
                 }
             }
         }
@@ -50,7 +68,34 @@ public class HunterFlashlight : MonoBehaviour
         return coneCastHits;
     }
 
-    private void OnDrawGizmos()
+    void UpdateFlashlight()
+    {
+        spotLight.enabled = insideAnotherObject ? false : lightOn;
+    }
+
+    public void ToggleFlashlight(bool value)
+    {
+        lightOn = value;
+        UpdateFlashlight();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        nTriggers++;
+        insideAnotherObject = true;
+        UpdateFlashlight();
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        nTriggers--;
+        if (nTriggers == 0)
+        {
+            insideAnotherObject = false;
+            UpdateFlashlight();
+        }
+    }
+
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawLine(transform.position, transform.position + transform.forward);
@@ -69,6 +114,7 @@ public class HunterFlashlight : MonoBehaviour
             {
                 Gizmos.color = Color.red;
                 Gizmos.DrawSphere(coneHits[i].point, .3f);
+                Gizmos.DrawRay(transform.position, coneHits[i].point - transform.position);
             }
         }
     }

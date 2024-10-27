@@ -1,10 +1,12 @@
+using Mirror;
 using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class SpawnPoint : MonoBehaviour
+public class SpawnPoint : NetworkBehaviour
 {
     public PlayerClass playerClass = PlayerClass.Hunter;
+    public float cooldownTime = 10;
 
     public void Awake()
     {
@@ -16,10 +18,16 @@ public class SpawnPoint : MonoBehaviour
         NetManager.UnRegisterSpawnPoint(this);
     }
 
-    public IEnumerator Cooldown(float sec)
+    public void StartCooldown()
+    {
+        if (isServer)
+            StartCoroutine(Cooldown());
+    }
+
+    IEnumerator Cooldown()
     {
         NetManager.UnRegisterSpawnPoint(this);
-        yield return new WaitForSeconds(sec);
+        yield return new WaitForSeconds(cooldownTime);
         NetManager.RegisterSpawnPoint(this);
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public enum PlayerClass { Hunter, Ghost };
 
@@ -9,7 +10,7 @@ public class PlayerManager : NetworkBehaviour
     public PlayerClass playerClass;
     public Transform cameraTransform {  get; private set; }
     public MeshRenderer hunterMeshRenderer, ghostMeshRenderer;
-    public GameObject hunterLantern;
+    public HunterFlashlight hunterFlashlight;
 
     PlayerMovement playerMovement;
 
@@ -26,13 +27,13 @@ public class PlayerManager : NetworkBehaviour
 
     void LateUpdate()
     {
+        if (!isServer) return;
+
         if (banishmentCurrentTime > 0) 
         {
-            Debug.Log(banishmentCurrentTime);
             if (banishmentCurrentTime >= banishmentTotalTime)
             {
-                Debug.Log("BANISHED");
-                BanishPlayer();
+                ServerBanishPlayer();
                 return;
             }
             if (banishmentLastTime == banishmentCurrentTime)
@@ -41,10 +42,14 @@ public class PlayerManager : NetworkBehaviour
                 if (banishing)
                 {
                     banishing = false;
-                    playerMovement.FlashlightSlowdown(false);
+                    playerMovement.ServerFlashlightSlowdown(false);
                 }
             }
             banishmentLastTime = banishmentCurrentTime;
+        }
+        if(banishmentCurrentTime < 0)
+        {
+            banishmentCurrentTime = Mathf.Min(banishmentCurrentTime + Time.deltaTime, 0f);
         }
     }
 
@@ -56,13 +61,13 @@ public class PlayerManager : NetworkBehaviour
                 tag = "Hunter";
                 hunterMeshRenderer.enabled = true;
                 ghostMeshRenderer.enabled = false;
-                hunterLantern.SetActive(true);
+                hunterFlashlight.gameObject.SetActive(true);
                 break;
             case PlayerClass.Ghost:
                 tag = "Ghost";
                 hunterMeshRenderer.enabled = false;
                 ghostMeshRenderer.enabled = true;
-                hunterLantern.SetActive(false);
+                hunterFlashlight.gameObject.SetActive(false);
                 break;
         }
     }
@@ -78,21 +83,53 @@ public class PlayerManager : NetworkBehaviour
         NetworkServer.Destroy(gameObject);
     }
 
-    public void FlashlightBanishment()
+    public void ToggleFlashlight(InputAction.CallbackContext inputContext)
+    {
+        if (!inputContext.started)
+            return;
+
+        CmdToggleFlashlight();
+    }
+
+    [Command]
+    void CmdToggleFlashlight()
+    {
+        RpcToggleFlashlight(!hunterFlashlight.lightOn);
+    }
+
+    [ClientRpc]
+    void RpcToggleFlashlight(bool value)
+    {
+        hunterFlashlight.ToggleFlashlight(value);
+    }
+
+    [Server]
+    public void ServerFlashlightBanishment()
     {
         banishmentCurrentTime += Time.deltaTime;
 
         if (!banishing)
         {
             banishing = true;
-            playerMovement.FlashlightSlowdown(true);
+            playerMovement.ServerFlashlightSlowdown(true);
         }
     }
 
-    void BanishPlayer()
+    [Server]
+    void ServerBanishPlayer()
     {
-        banishmentCurrentTime = banishmentLastTime = 0;
-        playerMovement.FlashlightSlowdown(false);
-        transform.position = NetManager.singleton.GetSpawnPoint(playerClass).position;
+        banishmentLastTime = 0;
+        banishmentCurrentTime = -3 * banishmentTotalTime;
+        banishing = false;
+        playerMovement.ServerFlashlightSlowdown(false);
+        playerMovement.respawning = true;
+        TargetRespawn(NetManager.singleton.GetSpawnPoint(playerClass).position);
+    }
+
+    [TargetRpc]
+    void TargetRespawn(Vector3 pos)
+    {
+        transform.position = pos;
+        playerMovement.CmdRespawn();
     }
 }

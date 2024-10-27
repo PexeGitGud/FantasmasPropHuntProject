@@ -99,7 +99,8 @@ public class NetManager : NetworkManager
             return null;
 
         SpawnPoint spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)];
-        spawnPoint.StartCoroutine(spawnPoint.Cooldown(5));
+        spawnPoint.StartCooldown();
+        Debug.Log(spawnPoint.ToString());
         return spawnPoint.transform;
     }
 }
