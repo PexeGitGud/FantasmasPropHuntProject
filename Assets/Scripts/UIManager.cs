@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour
         ghostButton.onClick.AddListener(SpawnGhostButton);
         hunterButton.onClick.AddListener(SpawnHunterButton);
 
-        OpenClassSelectionPanel();
+        CloseClassSelectionPanel();
     }
 
     void SpawnGhostButton()
@@ -44,9 +44,7 @@ public class UIManager : MonoBehaviour
         NetManager.singleton.CreatePlayer(createPlayerMessage);
 
         CloseClassSelectionPanel();
-        playerClassText.SetText("Ghost");
-        playerClassText.color = ghostColor;
-        outlineMaterial.SetColor("_Outline_Color", ghostColor);
+        ChangeClassUI(PlayerClass.Ghost);
     }
 
     void SpawnHunterButton()
@@ -60,9 +58,24 @@ public class UIManager : MonoBehaviour
         NetManager.singleton.CreatePlayer(createPlayerMessage);
 
         CloseClassSelectionPanel();
-        playerClassText.SetText("Hunter");
-        playerClassText.color = hunterColor;
-        outlineMaterial.SetColor("_Outline_Color", hunterColor);
+        ChangeClassUI(PlayerClass.Hunter);
+    }
+
+    public void ChangeClassUI(PlayerClass playerClass)
+    {
+        switch (playerClass)
+        {
+            case PlayerClass.Hunter:
+                playerClassText.SetText("Hunter");
+                playerClassText.color = hunterColor;
+                outlineMaterial.SetColor("_Outline_Color", hunterColor);
+                break;
+            case PlayerClass.Ghost:
+                playerClassText.SetText("Ghost");
+                playerClassText.color = ghostColor;
+                outlineMaterial.SetColor("_Outline_Color", ghostColor);
+                break;
+        }
     }
 
     void CloseClassSelectionPanel()

@@ -6,7 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/OfflineRoom.unity
+    guid: c40d9a08eafa19d4f9a26263dfabf78e
+  - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: 3dacc5b299df61442b347ee8bca5591f
+  - enabled: 1
+    path: Assets/Scenes/OnlineRoom.unity
+    guid: d6d2ca3cc722d3e48bdbccc4e4e3fe5f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 5b6d3298713ceb04d858b6e45b1e900a, type: 3}

@@ -23,6 +23,9 @@ public class PlayerManager : NetworkBehaviour
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
         playerMovement = GetComponent<PlayerMovement>();
+
+        if (isLocalPlayer)
+            FindFirstObjectByType<UIManager>()?.ChangeClassUI(playerClass);
     }
 
     void LateUpdate()
