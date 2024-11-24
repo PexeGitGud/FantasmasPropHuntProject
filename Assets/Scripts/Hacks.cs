@@ -28,6 +28,14 @@ public class Hacks : MonoBehaviour
         GetComponent<PlayerManager>().DestroyPlayer();
     }
 
+    public void ReduceTime(InputAction.CallbackContext inputContext)
+    {
+        if (!inputContext.started)
+            return;
+
+        GetComponent<PlayerManager>().CmdReduceMatchTime(10);
+    }
+
     public void CloseGame(InputAction.CallbackContext inputContext)
     {
         if (!inputContext.started)

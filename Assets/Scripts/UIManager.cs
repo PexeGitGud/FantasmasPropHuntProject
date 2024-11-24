@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +20,9 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    public GameObject classSelectionCamera, classSelectionPanel, playerUI;
-    public Button ghostButton, hunterButton;
-    public TMP_Text playerClassText;
+    public GameObject classSelectionCamera, classSelectionPanel, playerUI, gameOverScreen;
+    public Button ghostButton, hunterButton, returnToLobbyButton, quitButton;
+    public TMP_Text playerClassText, matchTimer;
     public Material outlineMaterial;
     public Color ghostColor, hunterColor;
 
@@ -29,8 +30,11 @@ public class UIManager : MonoBehaviour
     {
         ghostButton.onClick.AddListener(SpawnGhostButton);
         hunterButton.onClick.AddListener(SpawnHunterButton);
+        returnToLobbyButton.onClick.AddListener(ReturnToLobbyButton);
+        quitButton.onClick.AddListener(NetManager.singleton.ExitRoom);
 
         CloseClassSelectionPanel();
+        gameOverScreen.SetActive(false);
     }
 
     void SpawnGhostButton()
@@ -59,6 +63,12 @@ public class UIManager : MonoBehaviour
 
         CloseClassSelectionPanel();
         ChangeClassUI(PlayerClass.Hunter);
+    }
+
+    void ReturnToLobbyButton()
+    {
+        NetManager netManager = NetManager.singleton;
+        netManager.ServerChangeScene(netManager.RoomScene);
     }
 
     public void ChangeClassUI(PlayerClass playerClass)
@@ -92,5 +102,17 @@ public class UIManager : MonoBehaviour
         classSelectionPanel.SetActive(true);
         playerUI.SetActive(false);
         playerClassText.SetText("");
+    }
+
+    public void UpdateMatchTimeText(float matchTime)
+    {
+        TimeSpan time = TimeSpan.FromSeconds(MathF.Max(matchTime, 0));
+        matchTimer.text = time.ToString("mm':'ss");
+    }
+
+    public void ShowGameOverScreen()
+    {
+        gameOverScreen.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
     }
 }

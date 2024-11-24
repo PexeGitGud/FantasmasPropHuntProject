@@ -10,6 +10,6 @@ public class RoomUIManager : MonoBehaviour
     {
         NetManager netManager = NetManager.singleton;
         startGameButton.onClick.AddListener(() => netManager.ServerChangeScene(netManager.GameplayScene));
-        exitRoomButton.onClick.AddListener(netManager.StopClient);
+        exitRoomButton.onClick.AddListener(netManager.ExitRoom);
     }
 }

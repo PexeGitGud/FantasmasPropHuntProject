@@ -828,6 +828,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 4bbad531-1c08-43a7-8534-295d4088e4e2
     m_ActionName: Interaction/SecondaryInteraction[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4476699101633068332}
+        m_TargetAssemblyTypeName: Hacks, Assembly-CSharp
+        m_MethodName: ReduceTime
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 982e777c-39c4-4583-872a-60b0b14d606b
+    m_ActionName: Hack/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Movement
@@ -920,8 +936,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  respawning: 0
   movementSpeed: 5
-  slowModifier: 0.5
+  slowdpwnModifier: 0.5
   jumpPower: 7
   gravity: 10
   lookSpeed: 0.2

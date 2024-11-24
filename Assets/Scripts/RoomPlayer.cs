@@ -3,11 +3,14 @@ using UnityEngine;
 
 public class RoomPlayer : NetworkRoomPlayer
 {
-    [SyncVar(hook = nameof(PlayerNameChanged)), ReadOnly]
+    [ReadOnly]
+    [SyncVar(hook = nameof(PlayerNameChanged))]
     public string playerName;
-    [SyncVar(hook = nameof(PlayerClassChanged)), ReadOnly]
+    [ReadOnly]
+    [SyncVar(hook = nameof(PlayerClassChanged))]
     public PlayerClass playerClass;
-    [SyncVar, ReadOnly]
+    [ReadOnly]
+    [SyncVar]
     public bool playerHost;
 
     public RoomPlayerUI roomPlayerUIPrefab;
@@ -15,29 +18,49 @@ public class RoomPlayer : NetworkRoomPlayer
 
     RoomUIManager roomUIManager;
 
-    public override void Start()
+    bool clientStarted = false;
+
+    public override void OnStartClient()
+    {
+        CreateMyRoomPlayerUI();
+        clientStarted = true;
+
+        base.OnStartClient();
+    }
+
+    void CreateMyRoomPlayerUI()
     {
         roomUIManager = FindFirstObjectByType<RoomUIManager>();
 
         myRoomPlayerUI = Instantiate(roomPlayerUIPrefab, roomUIManager.roomPlayerList);
 
+        myRoomPlayerUI.classText.text = playerClass.ToString();
+        myRoomPlayerUI.classDropdown.value = (int)playerClass;
+        myRoomPlayerUI.readyToggle.isOn = readyToBegin;
+
         if (isLocalPlayer)
         {
-            CmdChangeName(PlayerPrefs.GetString(NetManager.savekeyPlayerName));
+            if (NetworkClient.ready)
+                CmdChangeName(PlayerPrefs.GetString(NetManager.savekeyPlayerName));
+            else
+                myRoomPlayerUI.nameText.text = playerName;
+
             myRoomPlayerUI.classText.gameObject.SetActive(false);
             myRoomPlayerUI.classDropdown.gameObject.SetActive(true);
             myRoomPlayerUI.classDropdown.onValueChanged.AddListener((int pc) => CmdChangeClass((PlayerClass)pc));
             myRoomPlayerUI.readyToggle.interactable = true;
             myRoomPlayerUI.readyToggle.onValueChanged.AddListener((bool b) => CmdChangeReadyState(b));
-            myRoomPlayerUI.kickPlayerButton.onClick.AddListener(GetComponent<NetworkIdentity>().connectionToClient.Disconnect);
 
             if (isServer)
             {
                 playerHost = true;
+                myRoomPlayerUI.kickPlayerButton.onClick.AddListener(GetComponent<NetworkIdentity>().connectionToClient.Disconnect);
             }
         }
         else
         {
+            myRoomPlayerUI.nameText.text = playerName;
+
             if (isServer)
             {
                 myRoomPlayerUI.kickPlayerButton.gameObject.SetActive(true);
@@ -45,8 +68,7 @@ public class RoomPlayer : NetworkRoomPlayer
             }
         }
 
-
-        base.Start();
+        myRoomPlayerUI.hostText.SetActive(playerHost);
     }
 
     [Command]
@@ -66,32 +88,36 @@ public class RoomPlayer : NetworkRoomPlayer
 
     }
 
-    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState) 
+    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
-        myRoomPlayerUI.readyToggle.isOn = newReadyState;
+        if (myRoomPlayerUI)
+            myRoomPlayerUI.readyToggle.isOn = newReadyState;
     }
 
     public void PlayerNameChanged(string oldName, string newName)
     {
-        myRoomPlayerUI.nameText.text = newName;
+        if (myRoomPlayerUI)
+            myRoomPlayerUI.nameText.text = newName;
     }
 
     public void PlayerClassChanged(PlayerClass oldClass, PlayerClass newClass)
     {
-        myRoomPlayerUI.classText.text = newClass.ToString();
+        if (myRoomPlayerUI)
+            myRoomPlayerUI.classText.text = newClass.ToString();
     }
 
     public override void OnClientEnterRoom()
     {
-        myRoomPlayerUI.nameText.text = playerName;
-        myRoomPlayerUI.hostText.SetActive(playerHost);
+        if (!myRoomPlayerUI && clientStarted)
+            CreateMyRoomPlayerUI();
     }
 
     public override void OnStopClient()
     {
         base.OnStopClient();
 
-        Destroy(myRoomPlayerUI.gameObject);
+        if (myRoomPlayerUI)
+            Destroy(myRoomPlayerUI.gameObject);
     }
 
     public override void OnGUI()

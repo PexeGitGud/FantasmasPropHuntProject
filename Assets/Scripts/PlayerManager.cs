@@ -135,4 +135,10 @@ public class PlayerManager : NetworkBehaviour
         transform.position = pos;
         playerMovement.CmdRespawn();
     }
+
+    [Command]
+    public void CmdReduceMatchTime(float time)
+    {
+        MatchManager.singleton.ServerReduceMatchTime(time);
+    }
 }

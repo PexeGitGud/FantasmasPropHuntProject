@@ -70,4 +70,5 @@ MonoBehaviour:
   index: 0
   playerName: Player
   playerClass: 0
+  playerHost: 0
   roomPlayerUIPrefab: {fileID: 3096392738596333799, guid: 6dbc47334daf20b47b11526193937819, type: 3}

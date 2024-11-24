@@ -21,9 +21,8 @@ public class NetManager : NetworkRoomManager
     {
         base.OnStartServer();
 
-        NetworkServer.RegisterHandler<CreatePlayerMessage>(OnCreatePlayer);
+        //NetworkServer.RegisterHandler<CreatePlayerMessage>(OnCreatePlayer);
     }
-
     public override void OnRoomServerPlayersReady()
     {
         if (Utils.IsSceneActive(RoomScene))
@@ -139,7 +138,16 @@ public class NetManager : NetworkRoomManager
 
         SpawnPoint spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)];
         spawnPoint.StartCooldown();
-        Debug.Log(spawnPoint.ToString());
         return spawnPoint.transform;
+    }
+
+    public void ExitRoom()
+    {
+        if (NetworkClient.activeHost)
+        {
+            StopHost();
+            return;
+        }
+        StopClient();
     }
 }
