@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour
     {
         ghostButton.onClick.AddListener(SpawnGhostButton);
         hunterButton.onClick.AddListener(SpawnHunterButton);
-        returnToLobbyButton.onClick.AddListener(ReturnToLobbyButton);
+        returnToLobbyButton.onClick.AddListener(NetManager.singleton.ReturnToLobby);
         quitButton.onClick.AddListener(NetManager.singleton.ExitRoom);
 
         CloseClassSelectionPanel();
@@ -63,12 +63,6 @@ public class UIManager : MonoBehaviour
 
         CloseClassSelectionPanel();
         ChangeClassUI(PlayerClass.Hunter);
-    }
-
-    void ReturnToLobbyButton()
-    {
-        NetManager netManager = NetManager.singleton;
-        netManager.ServerChangeScene(netManager.RoomScene);
     }
 
     public void ChangeClassUI(PlayerClass playerClass)

@@ -141,6 +141,12 @@ public class NetManager : NetworkRoomManager
         return spawnPoint.transform;
     }
 
+    public void ReturnToLobby()
+    {
+        if (NetworkClient.activeHost)
+            ServerChangeScene(RoomScene);
+    }
+
     public void ExitRoom()
     {
         if (NetworkClient.activeHost)

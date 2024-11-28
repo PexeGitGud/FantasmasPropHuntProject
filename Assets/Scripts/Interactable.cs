@@ -16,9 +16,16 @@ public class Interactable : NetworkBehaviour
     [SerializeField]
     UnityEvent hunterInteractionEvent;
 
+    public Material tvScreen;
+
     void Start()
     {
         outlineableObject.layer = defaultLayerInt;
+        if (tvScreen)
+        {
+            ghostInteractionEvent.AddListener(() => tvScreen.EnableKeyword("_EMISSION"));
+            hunterInteractionEvent.AddListener(() => tvScreen.DisableKeyword("_EMISSION"));
+        }
     }
 
     public void CanInteract(bool value)

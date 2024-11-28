@@ -13,7 +13,7 @@ public class PlayerMovement : NetworkBehaviour
     Vector2 lookInput;
     float verticalLookRot;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(FlashlightSlowdownChange))]
     bool flashlightSlowdown = false;
     [SyncVar]
     public bool respawning = false;
@@ -42,6 +42,7 @@ public class PlayerMovement : NetworkBehaviour
         DOTween.Init();
         slowShakeTween = transform.GetChild(0).DOShakeRotation(.5f, 5, 10, 90, true, ShakeRandomnessMode.Harmonic).SetRelative().SetEase(Ease.InOutElastic);
         slowShakeTween.onComplete = () => slowShakeTween.Rewind();
+        slowShakeTween.onRewind = () => { if (flashlightSlowdown) slowShakeTween.Play(); Debug.Log("Rewind"); };
         #endregion
     }
 
@@ -60,8 +61,10 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (respawning) return;
 
-        if (flashlightSlowdown && !slowShakeTween.IsPlaying())
-            slowShakeTween.Play();
+        //if (flashlightSlowdown)
+        //{
+        //    slowShakeTween.Play();
+        //}
 
         if (!isLocalPlayer) return;
 
@@ -103,6 +106,13 @@ public class PlayerMovement : NetworkBehaviour
     public void PlayerLook(InputAction.CallbackContext inputContext)
     {
         lookInput = inputContext.ReadValue<Vector2>();
+    }
+
+    void FlashlightSlowdownChange(bool oldFlashlightSlowdown, bool newFlashlightSlowdown)
+    {
+        if (newFlashlightSlowdown)
+            slowShakeTween.Play();
+        Debug.Log("ClientPlay");
     }
 
     [Server]

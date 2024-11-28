@@ -21,9 +21,14 @@ public class MatchManager : NetworkBehaviour
     [SyncVar(hook = nameof(OnMatchTimeUpdate)), ReadOnly]
     public float matchTime = -1;
 
+    CursableObject[] cursableObjects;
+    bool allCursed = false;
+
     void Start()
     {
         if (isServer) ServerStartMatch();
+
+        cursableObjects = FindObjectsOfType<CursableObject>();
     }
 
     [Server]
@@ -35,7 +40,7 @@ public class MatchManager : NetworkBehaviour
 
     IEnumerator MatchTimeUpdate()
     {
-        while (matchTime >= 0)
+        while (matchTime >= 0 && !allCursed)
         {
             yield return new WaitForSeconds(1);
             matchTime -= 1;
@@ -66,5 +71,27 @@ public class MatchManager : NetworkBehaviour
     public void ServerReduceMatchTime(float time)
     {
         matchTime -= time;
+    }
+
+    public void CurseCallback()
+    {
+        if (isServer)
+            ServerCurseCallback();
+    }
+
+    [Server]
+    void ServerCurseCallback()
+    {
+        allCursed = CheckIfAllCursed();
+    }
+
+    bool CheckIfAllCursed()
+    {
+        foreach (CursableObject cursable in cursableObjects)
+        {
+            if (!cursable.cursed)
+                return false;
+        }
+        return true;
     }
 }

@@ -918,9 +918,10 @@ MonoBehaviour:
   hunterMeshRenderer: {fileID: 2688752562164277869}
   ghostMeshRenderer: {fileID: 7126287220768141575}
   hunterFlashlight: {fileID: 874663382061653484}
-  banishmentTotalTime: 5
+  banishmentTotalTime: 2
   banishmentCurrentTime: 0
   banishmentLastTime: 0
+  banishmentMatchTimeReduction: 5
 --- !u!114 &8773922763810397150
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2514,7 +2514,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 936059411}
-  - component: {fileID: 936059413}
   - component: {fileID: 936059412}
   - component: {fileID: 936059414}
   m_Layer: 0
@@ -2584,30 +2583,13 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
-  showRoomGUI: 1
+  showRoomGUI: 0
   minPlayers: 1
   roomPlayerPrefab: {fileID: 8783057977856472753, guid: 71c9e247373c49e4c940f180e99f7b63, type: 3}
   RoomScene: Assets/Scenes/OnlineRoom.unity
   GameplayScene: Assets/Scenes/Main.unity
   _allPlayersReady: 0
   clientIndex: 0
---- !u!114 &936059413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 936059410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 2048953741
-  _assetId: 0
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!114 &936059414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2621,7 +2603,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   port: 7777
-  NoDelay: 1
+  NoDelay: 0
   SendTimeout: 5000
   ReceiveTimeout: 30000
   serverMaxMessageSize: 16384

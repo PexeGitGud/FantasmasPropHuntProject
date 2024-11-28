@@ -14,9 +14,10 @@ public class PlayerManager : NetworkBehaviour
 
     PlayerMovement playerMovement;
 
-    public float banishmentTotalTime = 5;
+    public float banishmentTotalTime = 2;
     public float banishmentCurrentTime = 0;
     public float banishmentLastTime = 0;
+    public float banishmentMatchTimeReduction = 5;
     bool banishing = false;
 
     void Start()
@@ -50,7 +51,7 @@ public class PlayerManager : NetworkBehaviour
             }
             banishmentLastTime = banishmentCurrentTime;
         }
-        if(banishmentCurrentTime < 0)
+        if (banishmentCurrentTime < 0)
         {
             banishmentCurrentTime = Mathf.Min(banishmentCurrentTime + Time.deltaTime, 0f);
         }
@@ -111,7 +112,7 @@ public class PlayerManager : NetworkBehaviour
     {
         banishmentCurrentTime += Time.deltaTime;
 
-        if (!banishing)
+        if (!banishing && banishmentCurrentTime >= 0)
         {
             banishing = true;
             playerMovement.ServerFlashlightSlowdown(true);
@@ -127,6 +128,7 @@ public class PlayerManager : NetworkBehaviour
         playerMovement.ServerFlashlightSlowdown(false);
         playerMovement.respawning = true;
         TargetRespawn(NetManager.singleton.GetSpawnPoint(playerClass).position);
+        MatchManager.singleton.ServerReduceMatchTime(banishmentMatchTimeReduction);
     }
 
     [TargetRpc]
