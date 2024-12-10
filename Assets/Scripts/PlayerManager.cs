@@ -143,4 +143,12 @@ public class PlayerManager : NetworkBehaviour
     {
         MatchManager.singleton.ServerReduceMatchTime(time);
     }
+
+    public void PossessCursableObject(CursableObject cursableObject)
+    {
+        //if(cameraTransform)
+        //    cameraTransform.gameObject.SetActive(false);
+
+        cursableObject.PlayCursedAnimation(true);
+    }
 }

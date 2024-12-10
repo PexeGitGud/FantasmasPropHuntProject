@@ -75,6 +75,11 @@ public class MatchManager : NetworkBehaviour
 
     public void CurseCallback()
     {
+        int cursedAmount = 0;
+        foreach (CursableObject cursable in cursableObjects)
+            cursedAmount += cursable.cursed ? 1 : 0;
+        UIManager.singleton.UpdateMatchSpookOMeter(cursedAmount, cursableObjects.Length);
+
         if (isServer)
             ServerCurseCallback();
     }

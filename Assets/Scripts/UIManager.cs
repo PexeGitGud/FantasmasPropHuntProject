@@ -22,7 +22,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject classSelectionCamera, classSelectionPanel, playerUI, gameOverScreen;
     public Button ghostButton, hunterButton, returnToLobbyButton, quitButton;
-    public TMP_Text playerClassText, matchTimer;
+    public TMP_Text playerClassText, matchTimerText;
+    public Image spookOMeter;
     public Material outlineMaterial;
     public Color ghostColor, hunterColor;
 
@@ -101,7 +102,12 @@ public class UIManager : MonoBehaviour
     public void UpdateMatchTimeText(float matchTime)
     {
         TimeSpan time = TimeSpan.FromSeconds(MathF.Max(matchTime, 0));
-        matchTimer.text = time.ToString("mm':'ss");
+        matchTimerText.text = time.ToString("mm':'ss");
+    }
+
+    public void UpdateMatchSpookOMeter(int currentCursedObjects, int maxCursedObjects)
+    {
+        spookOMeter.fillAmount = (float)currentCursedObjects / (float)maxCursedObjects;
     }
 
     public void ShowGameOverScreen()

@@ -11,20 +11,23 @@ public class Interactable : NetworkBehaviour
     [SerializeField]
     int outlineLayerInt;
 
-    [SerializeField]
-    UnityEvent ghostInteractionEvent;
-    [SerializeField]
-    UnityEvent hunterInteractionEvent;
+    public UnityEvent<PlayerManager> interactionEvent;
 
     public Material tvScreen;
 
     void Start()
     {
         outlineableObject.layer = defaultLayerInt;
+
+        CursableObject cursableObject = GetComponent<CursableObject>();
+        if (cursableObject)
+        {
+            interactionEvent.AddListener(cursableObject.Interact);
+        }
         if (tvScreen)
         {
-            ghostInteractionEvent.AddListener(() => tvScreen.EnableKeyword("_EMISSION"));
-            hunterInteractionEvent.AddListener(() => tvScreen.DisableKeyword("_EMISSION"));
+            //ghostInteractionEvent.AddListener(() => tvScreen.EnableKeyword("_EMISSION"));
+            //hunterInteractionEvent.AddListener(() => tvScreen.DisableKeyword("_EMISSION"));
         }
     }
 
@@ -34,16 +37,8 @@ public class Interactable : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcInteract(PlayerClass playerClass)
+    public void RpcInteract(PlayerManager player)
     {
-        switch (playerClass)
-        {
-            case PlayerClass.Hunter:
-                hunterInteractionEvent.Invoke();
-                break;
-            case PlayerClass.Ghost:
-                ghostInteractionEvent.Invoke();
-                break;
-        }
+        interactionEvent.Invoke(player);
     }
 }

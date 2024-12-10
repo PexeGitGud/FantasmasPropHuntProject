@@ -12,6 +12,19 @@ public class CursableObject : MonoBehaviour
         ogPos = transform.position;
     }
 
+    public void Interact(PlayerManager player)
+    {
+        switch (player.playerClass)
+        {
+            case PlayerClass.Hunter:
+                //PlayCursedAnimation(false);
+                break;
+            case PlayerClass.Ghost:
+                player.PossessCursableObject(this);
+                break;
+        }
+    }
+
     public void PlayCursedAnimation(bool play = true)
     {
         cursed = play;

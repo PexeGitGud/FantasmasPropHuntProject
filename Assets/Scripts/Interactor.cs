@@ -59,7 +59,7 @@ public class Interactor : NetworkBehaviour
     [Command]
     void CmdPlayerMainInteraction()
     {
-        lastInteractable?.RpcInteract(playerManager.playerClass);
+        lastInteractable?.RpcInteract(playerManager);
     }
 
     private void OnDrawGizmosSelected()
