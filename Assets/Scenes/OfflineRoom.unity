@@ -2657,7 +2657,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &936059411
 Transform:
   m_ObjectHideFlags: 0
@@ -2749,6 +2749,133 @@ MonoBehaviour:
   clientMaxReceivesPerTick: 1000
   clientSendQueueLimit: 10000
   clientReceiveQueueLimit: 10000
+--- !u!1 &937975575
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 937975579}
+  - component: {fileID: 937975578}
+  - component: {fileID: 937975580}
+  - component: {fileID: 937975577}
+  - component: {fileID: 937975576}
+  m_Layer: 0
+  m_Name: NetworkRoomManager (Steam)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &937975576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937975575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6e55fca1f4e4844593a3dd65a3ecb39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Channels: 0200000001000000
+  Timeout: 25
+  AllowSteamRelay: 1
+  UseNextGenSteamNetworking: 1
+--- !u!114 &937975577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937975575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &937975578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937975575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9fc13d791e9225468ea6ac4dbf4a911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  headlessStartMode: 0
+  editorAutoStart: 0
+  sendRate: 60
+  offlineScene: Assets/Scenes/OfflineRoom.unity
+  onlineScene: Assets/Scenes/OnlineRoom.unity
+  offlineSceneLoadDelay: 0
+  transport: {fileID: 937975576}
+  networkAddress: localhost
+  maxConnections: 100
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 4859891342417002720, guid: 24b0dcf6a710d6a4f971845f32ce2ce5, type: 3}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  exceptionsDisconnect: 0
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    bufferLimit: 32
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  evaluationMethod: 0
+  evaluationInterval: 3
+  timeInterpolationGui: 0
+  showRoomGUI: 0
+  minPlayers: 1
+  roomPlayerPrefab: {fileID: 8783057977856472753, guid: 71c9e247373c49e4c940f180e99f7b63, type: 3}
+  RoomScene: Assets/Scenes/OnlineRoom.unity
+  GameplayScene: Assets/Scenes/Main.unity
+  _allPlayersReady: 0
+  clientIndex: 0
+--- !u!4 &937975579
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937975575}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &937975580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937975575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89eb8dd1b25e53b4888ad93c62d70155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &938544628
 GameObject:
   m_ObjectHideFlags: 0
@@ -5820,5 +5947,6 @@ SceneRoots:
   - {fileID: 510966846}
   - {fileID: 1614230303}
   - {fileID: 936059411}
+  - {fileID: 937975579}
   - {fileID: 403472151}
   - {fileID: 842863088}
