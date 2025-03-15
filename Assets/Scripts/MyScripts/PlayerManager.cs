@@ -9,16 +9,23 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar(hook = nameof(OnClassChange))]
     public PlayerClass playerClass;
     public Transform cameraTransform {  get; private set; }
-    public MeshRenderer butlerMeshRenderer, ghostMeshRenderer;
+    public MeshRenderer butlerMeshRenderer, ghostMeshRenderer, eyesMeshRenderer;
     public ButlerFlashlight butlerFlashlight;
+
+    [SerializeField]
+    int selfLayer = 7;
 
     PlayerMovement playerMovement;
 
+    [Header("Banishment")]
     public float banishmentTotalTime = 2;
     public float banishmentCurrentTime = 0;
     public float banishmentLastTime = 0;
     public float banishmentMatchTimeReduction = 5;
     bool banishing = false;
+
+    [Header("Possession")]
+    public CursableObject possessedObject;
 
     void Start()
     {
@@ -26,13 +33,17 @@ public class PlayerManager : NetworkBehaviour
         playerMovement = GetComponent<PlayerMovement>();
 
         if (isLocalPlayer)
+        {
             FindFirstObjectByType<UIManager>()?.ChangeClassUI(playerClass);
+            butlerMeshRenderer.gameObject.layer = ghostMeshRenderer.gameObject.layer = selfLayer;
+        }
     }
 
     void LateUpdate()
     {
         if (!isServer) return;
 
+        #region Banishment
         if (banishmentCurrentTime > 0) 
         {
             if (banishmentCurrentTime >= banishmentTotalTime)
@@ -43,6 +54,8 @@ public class PlayerManager : NetworkBehaviour
             if (banishmentLastTime == banishmentCurrentTime)
             {
                 banishmentCurrentTime = Mathf.Max(banishmentCurrentTime - Time.deltaTime, 0f);
+                if (banishmentCurrentTime <= 0)
+                    UIManager.singleton.progressBarPanel.SetActive(false);
                 if (banishing)
                 {
                     banishing = false;
@@ -50,11 +63,17 @@ public class PlayerManager : NetworkBehaviour
                 }
             }
             banishmentLastTime = banishmentCurrentTime;
+            UIManager.singleton.progressBar.fillAmount = banishmentLastTime / banishmentTotalTime;
         }
         if (banishmentCurrentTime < 0)
         {
             banishmentCurrentTime = Mathf.Min(banishmentCurrentTime + Time.deltaTime, 0f);
         }
+        #endregion
+
+        #region Possession
+
+        #endregion
     }
 
     void OnClassChange(PlayerClass oldClass, PlayerClass newClass)
@@ -87,12 +106,20 @@ public class PlayerManager : NetworkBehaviour
         NetworkServer.Destroy(gameObject);
     }
 
-    public void ToggleFlashlight(InputAction.CallbackContext inputContext)
+    public void SecondaryInput(InputAction.CallbackContext inputContext)
     {
-        if (!inputContext.started)
-            return;
-
-        CmdToggleFlashlight();
+        if (inputContext.started)
+        {
+            switch (playerClass)
+            {
+                case PlayerClass.Butler:
+                    CmdToggleFlashlight();
+                    break;
+                case PlayerClass.Ghost:
+                    possessedObject?.PlayCursedAnimation();
+                    break;
+            }
+        }
     }
 
     [Command]
@@ -116,6 +143,7 @@ public class PlayerManager : NetworkBehaviour
         {
             banishing = true;
             playerMovement.ServerFlashlightSlowdown(true);
+            UIManager.singleton.progressBarPanel.SetActive(true);
         }
     }
 
@@ -126,6 +154,8 @@ public class PlayerManager : NetworkBehaviour
         banishmentCurrentTime = -3 * banishmentTotalTime;
         banishing = false;
         playerMovement.ServerFlashlightSlowdown(false);
+        UIManager.singleton.progressBarPanel.SetActive(false);
+        UIManager.singleton.progressBar.fillAmount = 0;
         playerMovement.respawning = true;
         TargetRespawn(NetManager.singleton.GetSpawnPoint(playerClass).position);
         MatchManager.singleton.ServerReduceMatchTime(banishmentMatchTimeReduction);
@@ -144,11 +174,26 @@ public class PlayerManager : NetworkBehaviour
         MatchManager.singleton.ServerReduceMatchTime(time);
     }
 
-    public void PossessCursableObject(CursableObject cursableObject)
+    public void StartPossession(CursableObject cursableObject)
     {
-        //if(cameraTransform)
-        //    cameraTransform.gameObject.SetActive(false);
+        possessedObject = cursableObject == possessedObject ? null : cursableObject;
+        playerMovement.characterController.enabled = ghostMeshRenderer.enabled = eyesMeshRenderer.enabled = !possessedObject;
+        transform.position = possessedObject ? possessedObject.transform.position + Vector3.up * -1 : transform.position;
+    }
 
-        cursableObject.PlayCursedAnimation(true);
+    public void CompletePossession(CursableObject cursableObject)
+    {
+        possessedObject = cursableObject == possessedObject ? null : cursableObject;
+        playerMovement.characterController.enabled = ghostMeshRenderer.enabled = eyesMeshRenderer.enabled = !possessedObject;
+        transform.position = possessedObject ? possessedObject.transform.position + Vector3.up * -1 : transform.position;
+    }
+
+    public void UnpossessObject(InputAction.CallbackContext inputContext)
+    {
+        if (inputContext.started)
+        {
+            if (possessedObject)
+                StartPossession(null);
+        }
     }
 }

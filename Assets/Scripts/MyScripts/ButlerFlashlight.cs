@@ -4,8 +4,8 @@ using UnityEngine;
 public class ButlerFlashlight : MonoBehaviour
 {
     public float angle = 25;
-    public float depth = 10;
-    public float radius = 10;
+    public float depth = 18;
+    public float radius = 18;
 
     Light spotLight;
 
@@ -98,11 +98,13 @@ public class ButlerFlashlight : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward);
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * radius);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, .1f);
+        Gizmos.DrawSphere(transform.position - transform.forward * depth, .3f);
+        Gizmos.DrawLine(transform.position - transform.forward * depth, transform.position - transform.forward * depth + transform.forward * depth);
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position + transform.forward * depth, radius);
+        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.color = Color.magenta;
         Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, angle, 0) * transform.forward * depth);
         Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(angle, 0, 0) * transform.forward * depth);
         Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, -angle, 0) * transform.forward * depth);

@@ -17,16 +17,19 @@ public class CursableObject : MonoBehaviour
         switch (player.playerClass)
         {
             case PlayerClass.Butler:
-                //PlayCursedAnimation(false);
+                //Inspect Object
                 break;
             case PlayerClass.Ghost:
-                player.PossessCursableObject(this);
+                player.StartPossession(this);
                 break;
         }
     }
 
     public void PlayCursedAnimation(bool play = true)
     {
+        if (cursed == play)
+            return;
+
         cursed = play;
         if (cursed)
         {

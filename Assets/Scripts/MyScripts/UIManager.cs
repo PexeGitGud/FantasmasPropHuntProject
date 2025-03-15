@@ -20,10 +20,10 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    public GameObject classSelectionCamera, classSelectionPanel, playerUI, gameOverScreen;
+    public GameObject classSelectionCamera, classSelectionPanel, playerUI, gameOverScreen, progressBarPanel;
     public Button ghostButton, butlerButton, returnToLobbyButton, quitButton;
     public TMP_Text playerClassText, matchTimerText;
-    public Image spookOMeter;
+    public Image spookOMeter, progressBar;
     public Material outlineMaterial;
     public Color ghostColor, butlerColor;
 
@@ -31,8 +31,11 @@ public class UIManager : MonoBehaviour
     {
         ghostButton.onClick.AddListener(SpawnGhostButton);
         butlerButton.onClick.AddListener(SpawnButlerButton);
-        returnToLobbyButton.onClick.AddListener(NetManager.singleton.ReturnToLobby);
-        quitButton.onClick.AddListener(NetManager.singleton.ExitRoom);
+        if (NetManager.singleton)
+        {
+            returnToLobbyButton.onClick.AddListener(NetManager.singleton.ReturnToLobby);
+            quitButton.onClick.AddListener(NetManager.singleton.ExitRoom);
+        }
 
         CloseClassSelectionPanel();
         gameOverScreen.SetActive(false);
@@ -74,11 +77,13 @@ public class UIManager : MonoBehaviour
                 playerClassText.SetText("Butler");
                 playerClassText.color = butlerColor;
                 outlineMaterial.SetColor("_Outline_Color", butlerColor);
+                progressBar.color = butlerColor;
                 break;
             case PlayerClass.Ghost:
                 playerClassText.SetText("Ghost");
                 playerClassText.color = ghostColor;
                 outlineMaterial.SetColor("_Outline_Color", ghostColor);
+                progressBar.color = ghostColor;
                 break;
         }
     }
