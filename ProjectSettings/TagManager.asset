@@ -4,7 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Hunter
+  - Butler
   - Ghost
   layers:
   - Default
@@ -14,7 +14,7 @@ TagManager:
   - Water
   - UI
   - Interactable
-  - 
+  - Self
   - 
   - 
   - 

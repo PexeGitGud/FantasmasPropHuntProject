@@ -7,7 +7,7 @@ public class PlayerMovement : NetworkBehaviour
 {
     PlayerManager playerManager;
 
-    CharacterController characterController;
+    public CharacterController characterController;
     Vector2 movementInput;
     Vector3 moveDirection;
     Vector2 lookInput;
@@ -81,7 +81,8 @@ public class PlayerMovement : NetworkBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         #endregion
 
-        characterController.Move(moveDirection * Time.deltaTime);
+        if (!playerManager.possessedObject)
+            characterController.Move(moveDirection * Time.deltaTime);
 
         #region Look and Rotation
         verticalLookRot += lookInput.y * lookSpeed;

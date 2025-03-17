@@ -13,27 +13,24 @@ public class Interactable : NetworkBehaviour
 
     public UnityEvent<PlayerManager> interactionEvent;
 
-    public Material tvScreen;
-
     void Start()
     {
-        outlineableObject.layer = defaultLayerInt;
+        CanInteract(false);
 
         CursableObject cursableObject = GetComponent<CursableObject>();
         if (cursableObject)
         {
             interactionEvent.AddListener(cursableObject.Interact);
         }
-        if (tvScreen)
-        {
-            //ghostInteractionEvent.AddListener(() => tvScreen.EnableKeyword("_EMISSION"));
-            //butlerInteractionEvent.AddListener(() => tvScreen.DisableKeyword("_EMISSION"));
-        }
     }
 
     public void CanInteract(bool value)
     {
         outlineableObject.layer = value ? outlineLayerInt : defaultLayerInt;
+        for (int i = 0; i < outlineableObject.transform.childCount; i++)
+        {
+            outlineableObject.transform.GetChild(i).gameObject.layer = outlineableObject.layer;
+        }
     }
 
     [ClientRpc]
