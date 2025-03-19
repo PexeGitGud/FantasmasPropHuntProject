@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ButlerFlashlight : MonoBehaviour
 {
+    [SerializeField]
+    PlayerManager ownerPlayer;
     public float angle = 25;
     public float depth = 18;
     public float radius = 18;
@@ -20,7 +22,7 @@ public class ButlerFlashlight : MonoBehaviour
 
     void Update()
     {
-        if (!spotLight.enabled)
+        if (!spotLight.enabled || !ownerPlayer.isServer)
             return;
 
         RaycastHit[] coneHits = ConeCastAll(transform.position, radius, transform.forward, depth, angle, "Ghost");
@@ -32,7 +34,7 @@ public class ButlerFlashlight : MonoBehaviour
                 //do something with collider information
                 PlayerManager pm = coneHits[i].collider.GetComponent<PlayerManager>();
                 if(pm && pm.isServer)
-                    pm.ServerFlashlightBanishment();
+                    pm.ServerFlashlightBanishment(ownerPlayer);
             }
         }
     }

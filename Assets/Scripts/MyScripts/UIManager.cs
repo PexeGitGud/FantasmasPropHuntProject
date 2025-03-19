@@ -39,6 +39,7 @@ public class UIManager : MonoBehaviour
 
         CloseClassSelectionPanel();
         gameOverScreen.SetActive(false);
+        progressBarPanel.SetActive(false);
     }
 
     void SpawnGhostButton()

@@ -440,6 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51149c32b69fd264cb85a3db9dabaaa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerPlayer: {fileID: 1503838510917307195}
   angle: 25
   depth: 18
   radius: 18
@@ -842,18 +843,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0
+  syncInterval: 0.05
   playerClass: 0
   butlerMeshRenderer: {fileID: 2688752562164277869}
   ghostMeshRenderer: {fileID: 3193000155263762358}
   eyesMeshRenderer: {fileID: 644126400162238067}
   butlerFlashlight: {fileID: 874663382061653484}
+  selfLayer: 7
   banishmentTotalTime: 2
   banishmentCurrentTime: 0
   banishmentLastTime: 0
   banishmentMatchTimeReduction: 5
   possessedObject: {fileID: 0}
-  selfLayer: 7
 --- !u!114 &8773922763810397150
 MonoBehaviour:
   m_ObjectHideFlags: 0

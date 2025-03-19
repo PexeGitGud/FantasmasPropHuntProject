@@ -19,6 +19,7 @@ public class PlayerManager : NetworkBehaviour
 
     [Header("Banishment")]
     public float banishmentTotalTime = 2;
+    [SyncVar(hook = nameof(OnBanishmentTimeChange))]
     public float banishmentCurrentTime = 0;
     public float banishmentLastTime = 0;
     public float banishmentMatchTimeReduction = 5;
@@ -54,16 +55,15 @@ public class PlayerManager : NetworkBehaviour
             if (banishmentLastTime == banishmentCurrentTime)
             {
                 banishmentCurrentTime = Mathf.Max(banishmentCurrentTime - Time.deltaTime, 0f);
-                if (banishmentCurrentTime <= 0)
-                    UIManager.singleton.progressBarPanel.SetActive(false);
                 if (banishing)
                 {
                     banishing = false;
-                    playerMovement.ServerFlashlightSlowdown(false);
+
+                    if (playerClass == PlayerClass.Ghost)
+                        playerMovement.ServerFlashlightSlowdown(false);
                 }
             }
             banishmentLastTime = banishmentCurrentTime;
-            UIManager.singleton.progressBar.fillAmount = banishmentLastTime / banishmentTotalTime;
         }
         if (banishmentCurrentTime < 0)
         {
@@ -92,6 +92,15 @@ public class PlayerManager : NetworkBehaviour
                 ghostMeshRenderer.enabled = true;
                 butlerFlashlight.gameObject.SetActive(false);
                 break;
+        }
+    }
+
+    void OnBanishmentTimeChange(float oldValue, float newValue)
+    {
+        if (isLocalPlayer)
+        {
+            UIManager.singleton.progressBar.fillAmount = newValue / banishmentTotalTime;
+            UIManager.singleton.progressBarPanel.SetActive(newValue > 0);
         }
     }
 
@@ -135,15 +144,16 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [Server]
-    public void ServerFlashlightBanishment()
+    public void ServerFlashlightBanishment(PlayerManager owner)
     {
-        banishmentCurrentTime += Time.deltaTime;
+        owner.banishmentCurrentTime = banishmentCurrentTime += Time.deltaTime;
 
         if (!banishing && banishmentCurrentTime >= 0)
         {
-            banishing = true;
-            playerMovement.ServerFlashlightSlowdown(true);
-            UIManager.singleton.progressBarPanel.SetActive(true);
+            owner.banishing = banishing = true;
+
+            if (playerClass == PlayerClass.Ghost)
+                playerMovement.ServerFlashlightSlowdown(true);
         }
     }
 
@@ -153,12 +163,14 @@ public class PlayerManager : NetworkBehaviour
         banishmentLastTime = 0;
         banishmentCurrentTime = -3 * banishmentTotalTime;
         banishing = false;
-        playerMovement.ServerFlashlightSlowdown(false);
-        UIManager.singleton.progressBarPanel.SetActive(false);
-        UIManager.singleton.progressBar.fillAmount = 0;
-        playerMovement.respawning = true;
-        TargetRespawn(NetManager.singleton.GetSpawnPoint(playerClass).position);
-        MatchManager.singleton.ServerReduceMatchTime(banishmentMatchTimeReduction);
+
+        if (playerClass == PlayerClass.Ghost)
+        {
+            playerMovement.ServerFlashlightSlowdown(false);
+            playerMovement.respawning = true;
+            TargetRespawn(NetManager.singleton.GetSpawnPoint(playerClass).position);
+            MatchManager.singleton.ServerReduceMatchTime(banishmentMatchTimeReduction);
+        }
     }
 
     [TargetRpc]
