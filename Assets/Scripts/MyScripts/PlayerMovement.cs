@@ -81,7 +81,7 @@ public class PlayerMovement : NetworkBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         #endregion
 
-        if (!playerManager.possessedObject)
+        if (!playerManager.possessedObject && characterController.enabled)
             characterController.Move(moveDirection * Time.deltaTime);
 
         #region Look and Rotation

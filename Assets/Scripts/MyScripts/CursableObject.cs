@@ -1,7 +1,8 @@
 using DG.Tweening;
 using UnityEngine;
+using Mirror;
 
-public class CursableObject : MonoBehaviour
+public class CursableObject : NetworkBehaviour
 {
     public bool cursed = false;
     Vector3 ogPos;
@@ -14,23 +15,25 @@ public class CursableObject : MonoBehaviour
 
     public void Interact(PlayerManager player)
     {
+        if (cursed) return;
+
         switch (player.playerClass)
         {
             case PlayerClass.Butler:
                 //Inspect Object
                 break;
             case PlayerClass.Ghost:
-                player.StartPossession(this);
+                player.ServerStartPossession(this);
                 break;
         }
     }
 
     public void PlayCursedAnimation(bool play = true)
     {
-        if (cursed == play)
-            return;
+        if (cursed == play) return;
 
-        cursed = play;
+        GetComponent<Interactable>().disabled = cursed = play;
+
         if (cursed)
         {
             transform.DOMoveY(ogPos.y + .25f, .5f).SetEase(Ease.InOutSine).OnComplete(()=>transform.DOMoveY(ogPos.y + .75f, .75f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo));

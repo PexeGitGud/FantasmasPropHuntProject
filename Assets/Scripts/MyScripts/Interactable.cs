@@ -4,6 +4,7 @@ using Mirror;
 
 public class Interactable : NetworkBehaviour
 {
+    public bool disabled = false;
     [SerializeField]
     GameObject outlineableObject;
     [SerializeField]
@@ -26,6 +27,8 @@ public class Interactable : NetworkBehaviour
 
     public void CanInteract(bool value)
     {
+        value = disabled ? false : value;
+
         outlineableObject.layer = value ? outlineLayerInt : defaultLayerInt;
         for (int i = 0; i < outlineableObject.transform.childCount; i++)
         {
@@ -33,8 +36,8 @@ public class Interactable : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void RpcInteract(PlayerManager player)
+    [Server]
+    public void ServerInteract(PlayerManager player)
     {
         interactionEvent.Invoke(player);
     }

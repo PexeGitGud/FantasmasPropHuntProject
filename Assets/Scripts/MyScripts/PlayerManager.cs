@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using UnityEngine.InputSystem;
+using Mirror.Examples.Benchmark;
 
 public enum PlayerClass { Butler, Ghost };
 
@@ -27,6 +28,17 @@ public class PlayerManager : NetworkBehaviour
 
     [Header("Possession")]
     public CursableObject possessedObject;
+    public float possessionTotalTime = 2;
+    [SyncVar(hook = nameof(OnPossessionTimeChange))]
+    public float possessionCurrentTime = 0;
+    CursableObject tryingToPossessObject;
+    bool possessioning = false;
+
+    [Header("Cursing")]
+    public float cursingTotalTime = 2;
+    [SyncVar(hook = nameof(OnCursingTimeChange))]
+    public float cursingCurrentTime = 0;
+    bool cursing = false;
 
     void Start()
     {
@@ -45,25 +57,27 @@ public class PlayerManager : NetworkBehaviour
         if (!isServer) return;
 
         #region Banishment
-        if (banishmentCurrentTime > 0) 
+        if (banishmentCurrentTime > 0)
         {
             if (banishmentCurrentTime >= banishmentTotalTime)
             {
                 ServerBanishPlayer();
-                return;
             }
-            if (banishmentLastTime == banishmentCurrentTime)
+            else
             {
-                banishmentCurrentTime = Mathf.Max(banishmentCurrentTime - Time.deltaTime, 0f);
-                if (banishing)
+                if (banishmentLastTime == banishmentCurrentTime)
                 {
-                    banishing = false;
+                    banishmentCurrentTime = Mathf.Max(banishmentCurrentTime - Time.deltaTime, 0f);
+                    if (banishing)
+                    {
+                        banishing = false;
 
-                    if (playerClass == PlayerClass.Ghost)
-                        playerMovement.ServerFlashlightSlowdown(false);
+                        if (playerClass == PlayerClass.Ghost)
+                            playerMovement.ServerFlashlightSlowdown(false);
+                    }
                 }
+                banishmentLastTime = banishmentCurrentTime;
             }
-            banishmentLastTime = banishmentCurrentTime;
         }
         if (banishmentCurrentTime < 0)
         {
@@ -72,7 +86,29 @@ public class PlayerManager : NetworkBehaviour
         #endregion
 
         #region Possession
+        if (possessioning)
+        {
+            possessionCurrentTime += Time.deltaTime;
 
+            if (possessionCurrentTime >= possessionTotalTime)
+            {
+                ServerCompletePossession(tryingToPossessObject);
+                ServerStopPossession();
+            }
+        }
+        #endregion
+
+        #region Cursing
+        if (cursing)
+        {
+            cursingCurrentTime += Time.deltaTime;
+
+            if (cursingCurrentTime >= cursingTotalTime)
+            {
+                ServerCompleteCursing();
+                ServerStopCursing();
+            }
+        }
         #endregion
     }
 
@@ -98,10 +134,19 @@ public class PlayerManager : NetworkBehaviour
     void OnBanishmentTimeChange(float oldValue, float newValue)
     {
         if (isLocalPlayer)
-        {
-            UIManager.singleton.progressBar.fillAmount = newValue / banishmentTotalTime;
-            UIManager.singleton.progressBarPanel.SetActive(newValue > 0);
-        }
+            UIManager.singleton.UpdateProgressBar(newValue / banishmentTotalTime, (ProgressBarType)playerClass);
+    }
+
+    void OnPossessionTimeChange(float oldValue, float newValue)
+    {
+        if (isLocalPlayer)
+            UIManager.singleton.UpdateProgressBar(newValue / possessionTotalTime, ProgressBarType.Possession);
+    }
+
+    void OnCursingTimeChange(float oldValue, float newValue)
+    {
+        if (isLocalPlayer)
+            UIManager.singleton.UpdateProgressBar(newValue / cursingTotalTime, ProgressBarType.Cursing);
     }
 
     public void DestroyPlayer()
@@ -115,6 +160,20 @@ public class PlayerManager : NetworkBehaviour
         NetworkServer.Destroy(gameObject);
     }
 
+    [Server]
+    public void ServerInteractionNull()
+    {
+        switch (playerClass)
+        {
+            case PlayerClass.Butler:
+                break;
+            case PlayerClass.Ghost:
+                if (possessedObject || possessioning)
+                    ServerStartPossession(null);
+                break;
+        }
+    }
+
     public void SecondaryInput(InputAction.CallbackContext inputContext)
     {
         if (inputContext.started)
@@ -125,7 +184,8 @@ public class PlayerManager : NetworkBehaviour
                     CmdToggleFlashlight();
                     break;
                 case PlayerClass.Ghost:
-                    possessedObject?.PlayCursedAnimation();
+                    CmdStartCursing();
+                    //possessedObject?.PlayCursedAnimation();
                     break;
             }
         }
@@ -153,7 +213,12 @@ public class PlayerManager : NetworkBehaviour
             owner.banishing = banishing = true;
 
             if (playerClass == PlayerClass.Ghost)
+            {
                 playerMovement.ServerFlashlightSlowdown(true);
+
+                if (possessioning)
+                    ServerStopPossession();
+            }
         }
     }
 
@@ -186,26 +251,82 @@ public class PlayerManager : NetworkBehaviour
         MatchManager.singleton.ServerReduceMatchTime(time);
     }
 
-    public void StartPossession(CursableObject cursableObject)
+    [Server]
+    public void ServerStartPossession(CursableObject cursableObject)
     {
-        possessedObject = cursableObject == possessedObject ? null : cursableObject;
-        playerMovement.characterController.enabled = ghostMeshRenderer.enabled = eyesMeshRenderer.enabled = !possessedObject;
-        transform.position = possessedObject ? possessedObject.transform.position + Vector3.up * -1 : transform.position;
-    }
+        if (banishing || cursing) return;
 
-    public void CompletePossession(CursableObject cursableObject)
-    {
-        possessedObject = cursableObject == possessedObject ? null : cursableObject;
-        playerMovement.characterController.enabled = ghostMeshRenderer.enabled = eyesMeshRenderer.enabled = !possessedObject;
-        transform.position = possessedObject ? possessedObject.transform.position + Vector3.up * -1 : transform.position;
-    }
-
-    public void UnpossessObject(InputAction.CallbackContext inputContext)
-    {
-        if (inputContext.started)
+        if (possessioning)
         {
-            if (possessedObject)
-                StartPossession(null);
+            ServerStopPossession();
+            return;
         }
+
+        possessioning = true;
+        tryingToPossessObject = possessedObject == null ? cursableObject : null;
+        RpcStartStopPossession(true);
+    }
+
+    [Server]
+    public void ServerStopPossession()
+    {
+        possessioning = false;
+        tryingToPossessObject = null;
+        possessionCurrentTime = 0;
+        RpcStartStopPossession(possessedObject == null);
+    }
+
+    [Server]
+    public void ServerCompletePossession(CursableObject cursableObject) 
+    {
+        RpcCompletePossession(cursableObject);
+    }
+
+    [ClientRpc]
+    void RpcCompletePossession(CursableObject cursableObject)
+    {
+        possessedObject = cursableObject;
+        playerMovement.characterController.enabled = ghostMeshRenderer.enabled = eyesMeshRenderer.enabled = possessedObject == null;
+        transform.position = possessedObject == null ? transform.position : possessedObject.transform.position + Vector3.up * -1;
+    }
+
+    [ClientRpc]
+    void RpcStartStopPossession(bool start)
+    {
+        playerMovement.characterController.enabled = !start;
+    }
+
+    [Command]
+    void CmdStartCursing()
+    {
+        if (possessioning || !possessedObject) return;
+
+        if (cursing)
+        {
+            ServerStopCursing();
+            return;
+        }
+
+        cursing = true;
+    }
+
+    [Server]
+    void ServerStopCursing()
+    {
+        cursing = false;
+        cursingCurrentTime = 0;
+    }
+
+    [Server]
+    void ServerCompleteCursing()
+    {
+        ServerCompletePossession(null);
+        RpcCompleteCursing(possessedObject);
+    }
+
+    [ClientRpc]
+    void RpcCompleteCursing(CursableObject possessedObject)
+    {
+        possessedObject.PlayCursedAnimation();
     }
 }
