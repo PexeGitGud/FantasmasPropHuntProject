@@ -4,6 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum ProgressBarType
+{
+    ButlerBanishment,
+    GhostBanishment,
+    Possession,
+    Cursing
+};
+
 public class UIManager : MonoBehaviour
 {
     #region Singleton
@@ -22,10 +30,10 @@ public class UIManager : MonoBehaviour
 
     public GameObject classSelectionCamera, classSelectionPanel, playerUI, gameOverScreen, progressBarPanel;
     public Button ghostButton, butlerButton, returnToLobbyButton, quitButton;
-    public TMP_Text playerClassText, matchTimerText;
+    public TMP_Text playerClassText, matchTimerText, progressBarText;
     public Image spookOMeter, progressBar;
     public Material outlineMaterial;
-    public Color ghostColor, butlerColor;
+    public Color ghostColor, butlerColor, possessionColor, cursingColor;
 
     void Start()
     {
@@ -78,13 +86,11 @@ public class UIManager : MonoBehaviour
                 playerClassText.SetText("Butler");
                 playerClassText.color = butlerColor;
                 outlineMaterial.SetColor("_Outline_Color", butlerColor);
-                progressBar.color = butlerColor;
                 break;
             case PlayerClass.Ghost:
                 playerClassText.SetText("Ghost");
                 playerClassText.color = ghostColor;
                 outlineMaterial.SetColor("_Outline_Color", ghostColor);
-                progressBar.color = ghostColor;
                 break;
         }
     }
@@ -114,6 +120,35 @@ public class UIManager : MonoBehaviour
     public void UpdateMatchSpookOMeter(int currentCursedObjects, int maxCursedObjects)
     {
         spookOMeter.fillAmount = (float)currentCursedObjects / (float)maxCursedObjects;
+    }
+
+    public void UpdateProgressBar(float percentage, ProgressBarType progressBarType)
+    {
+        progressBar.fillAmount = percentage;
+        progressBarPanel.SetActive(percentage > 0);
+        switch (progressBarType)
+        {
+            case ProgressBarType.ButlerBanishment:
+                progressBar.color = butlerColor;
+                progressBarText.text = "Banishing";
+                break;
+            case ProgressBarType.GhostBanishment:
+                progressBar.color = ghostColor;
+                progressBarText.text = "Banishing";
+                break;
+            case ProgressBarType.Possession:
+                progressBar.color = possessionColor;
+                progressBarText.text = "Possessing";
+                break;
+            case ProgressBarType.Cursing:
+                progressBar.color = cursingColor;
+                progressBarText.text = "Cursing";
+                break;
+            default:
+                progressBar.color = Color.white;
+                progressBarText.text = "";
+                break;
+        }
     }
 
     public void ShowGameOverScreen()

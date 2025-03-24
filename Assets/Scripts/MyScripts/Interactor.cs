@@ -52,14 +52,19 @@ public class Interactor : NetworkBehaviour
 
     public void PlayerMainInteraction(InputAction.CallbackContext inputContext)
     {
-        if (isLocalPlayer && inputContext.performed)
+        if (isLocalPlayer && inputContext.started)
             CmdPlayerMainInteraction();
     }
 
     [Command]
     void CmdPlayerMainInteraction()
     {
-        lastInteractable?.RpcInteract(playerManager);
+        if (lastInteractable && !lastInteractable.disabled)
+        {
+            lastInteractable.ServerInteract(playerManager);
+            return;
+        }
+        playerManager.ServerInteractionNull();
     }
 
     private void OnDrawGizmosSelected()
