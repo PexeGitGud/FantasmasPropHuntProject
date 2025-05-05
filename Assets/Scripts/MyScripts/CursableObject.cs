@@ -5,6 +5,7 @@ using Mirror;
 public class CursableObject : NetworkBehaviour
 {
     public bool cursed = false;
+    public PlayerManager possessingPlayer;
     Vector3 ogPos;
 
     void Start()
@@ -20,7 +21,7 @@ public class CursableObject : NetworkBehaviour
         switch (player.playerClass)
         {
             case PlayerClass.Butler:
-                //Inspect Object
+                player.ServerStartInspection(this);
                 break;
             case PlayerClass.Ghost:
                 player.ServerStartPossession(this);

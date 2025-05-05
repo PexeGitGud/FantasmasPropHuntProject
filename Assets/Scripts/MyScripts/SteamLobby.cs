@@ -55,4 +55,9 @@ public class SteamLobby : MonoBehaviour
         netManager.networkAddress = hostAddress;
         netManager.StartClient();
     }
+
+    public void JoinLobby()
+    {
+        SteamFriends.ActivateGameOverlay("Players");
+    }
 }

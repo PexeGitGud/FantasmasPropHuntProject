@@ -15,8 +15,8 @@ public class PlayerMovement : NetworkBehaviour
 
     [SyncVar(hook = nameof(FlashlightSlowdownChange))]
     bool flashlightSlowdown = false;
-    [SyncVar]
-    public bool respawning = false;
+    //[SyncVar]
+    //public bool respawning = false;
 
     [SerializeField]
     float movementSpeed = 5;
@@ -59,7 +59,7 @@ public class PlayerMovement : NetworkBehaviour
 
     void Update()
     {
-        if (respawning) return;
+        if (playerManager.respawning) return;
 
         //if (flashlightSlowdown)
         //{
@@ -120,11 +120,5 @@ public class PlayerMovement : NetworkBehaviour
     public void ServerFlashlightSlowdown(bool slowing)
     {
         flashlightSlowdown = slowing;
-    }
-
-    [Command]
-    public void CmdRespawn()
-    {
-        respawning = false;
     }
 }

@@ -9,7 +9,9 @@ public enum ProgressBarType
     ButlerBanishment,
     GhostBanishment,
     Possession,
-    Cursing
+    Cursing,
+    Respawn,
+    Inspection
 };
 
 public class UIManager : MonoBehaviour
@@ -33,7 +35,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text playerClassText, matchTimerText, progressBarText;
     public Image spookOMeter, progressBar;
     public Material outlineMaterial;
-    public Color ghostColor, butlerColor, possessionColor, cursingColor;
+    public Color ghostColor, butlerColor, possessionColor, cursingColor, respawnColor, inspectionColor;
 
     void Start()
     {
@@ -143,6 +145,14 @@ public class UIManager : MonoBehaviour
             case ProgressBarType.Cursing:
                 progressBar.color = cursingColor;
                 progressBarText.text = "Cursing";
+                break;
+            case ProgressBarType.Respawn:
+                progressBar.color = respawnColor;
+                progressBarText.text = "Respawning";
+                break;
+            case ProgressBarType.Inspection:
+                progressBar.color = inspectionColor;
+                progressBarText.text = "Inspecting";
                 break;
             default:
                 progressBar.color = Color.white;

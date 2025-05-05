@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class MainMenuUIManager : MonoBehaviour
 {
-    public GameObject mainMenuScreen, roomCreationScreen, joinConfigScreen;
-    public Button playButton, quitButton, hostButton, joinConfigButton, joinButton;
+    public GameObject mainMenuScreen, roomCreationScreen, joinConfigScreen, settingsScreen;
+    public Button playButton, quitButton, hostButton, joinConfigButton, joinButton, settingsButton;
     public Button[] returnButtons;
     public TMP_InputField playerNameInputField, joinIPInputField, joinPortInputField;
 
@@ -26,11 +26,13 @@ public class MainMenuUIManager : MonoBehaviour
         mainMenuScreen.SetActive(true);
         roomCreationScreen.SetActive(false);
         joinConfigScreen.SetActive(false);
+        settingsScreen.SetActive(false);
 
         playButton.onClick.AddListener(() => OpenScreen(roomCreationScreen));
         hostButton.onClick.AddListener(steamLobby ? steamLobby.HostLobby : netManager.StartHost);
-        joinConfigButton.onClick.AddListener(() => OpenScreen(joinConfigScreen));
+        joinConfigButton.onClick.AddListener(steamLobby ? steamLobby.JoinLobby : () => OpenScreen(joinConfigScreen));
         joinButton.onClick.AddListener(netManager.StartClient);
+        settingsButton.onClick.AddListener(() => OpenScreen(settingsScreen));
         quitButton.onClick.AddListener(Application.Quit);
         foreach(Button button in returnButtons)
             button.onClick.AddListener(ReturnToPreviousScreen);

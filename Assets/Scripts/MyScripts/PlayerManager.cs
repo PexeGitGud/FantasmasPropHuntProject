@@ -40,6 +40,21 @@ public class PlayerManager : NetworkBehaviour
     public float cursingCurrentTime = 0;
     bool cursing = false;
 
+    [Header("Respawn")]
+    public float respawnTotalTime = 2;
+    [SyncVar(hook = nameof(OnRespawnTimeChange))]
+    public float respawnCurrentTime = 0;
+    [SyncVar]
+    public bool respawning = false;
+    Vector3 respawnLocation = Vector3.zero;
+
+    [Header("Inspection")]
+    public float inspectionTotalTime = 2;
+    [SyncVar(hook = nameof(OnInspectionTimeChange))]
+    public float inspectionCurrentTime = 0;
+    CursableObject tryingToInspectObject;
+    bool inspecting = false;
+
     void Start()
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
@@ -110,6 +125,31 @@ public class PlayerManager : NetworkBehaviour
             }
         }
         #endregion
+
+        #region Respawn
+        if (respawning)
+        {
+            respawnCurrentTime += Time.deltaTime;
+
+            if (respawnCurrentTime >= respawnTotalTime)
+            {
+                ServerCompleteRespawn();
+            }
+        }
+        #endregion
+
+        #region Inspection
+        if (inspecting)
+        {
+            inspectionCurrentTime += Time.deltaTime;
+
+            if (inspectionCurrentTime >= inspectionTotalTime)
+            {
+                ServerCompleteInspection(tryingToInspectObject);
+                ServerStopInspection();
+            }
+        }
+        #endregion
     }
 
     void OnClassChange(PlayerClass oldClass, PlayerClass newClass)
@@ -149,6 +189,18 @@ public class PlayerManager : NetworkBehaviour
             UIManager.singleton.UpdateProgressBar(newValue / cursingTotalTime, ProgressBarType.Cursing);
     }
 
+    void OnRespawnTimeChange(float oldValue, float newValue)
+    {
+        if (isLocalPlayer)
+            UIManager.singleton.UpdateProgressBar(newValue / respawnTotalTime, ProgressBarType.Respawn);
+    }
+
+    void OnInspectionTimeChange(float oldValue, float newValue)
+    {
+        if (isLocalPlayer)
+            UIManager.singleton.UpdateProgressBar(newValue / inspectionTotalTime, ProgressBarType.Inspection);
+    }
+
     public void DestroyPlayer()
     {
         CmdDestroyPlayer();
@@ -166,6 +218,8 @@ public class PlayerManager : NetworkBehaviour
         switch (playerClass)
         {
             case PlayerClass.Butler:
+                if (inspecting)
+                    ServerStopInspection();
                 break;
             case PlayerClass.Ghost:
                 if (possessedObject || possessioning)
@@ -232,17 +286,52 @@ public class PlayerManager : NetworkBehaviour
         if (playerClass == PlayerClass.Ghost)
         {
             playerMovement.ServerFlashlightSlowdown(false);
-            playerMovement.respawning = true;
-            TargetRespawn(NetManager.singleton.GetSpawnPoint(playerClass).position);
             MatchManager.singleton.ServerReduceMatchTime(banishmentMatchTimeReduction);
+            ServerStartRespawn();
         }
     }
 
-    [TargetRpc]
-    void TargetRespawn(Vector3 pos)
+    [Server]
+    void ServerStartRespawn()
     {
-        transform.position = pos;
-        playerMovement.CmdRespawn();
+        respawning = true;
+        respawnLocation = NetManager.singleton.GetSpawnPoint(playerClass).position;
+        TargetStartRespawn();
+        RpcStartRespawn();
+    }
+
+    [TargetRpc]
+    void TargetStartRespawn()
+    {
+        playerMovement.characterController.enabled = false;
+    }
+
+    [ClientRpc]
+    void RpcStartRespawn()
+    {
+        ghostMeshRenderer.enabled = false;
+    }
+
+    [Server]
+    void ServerCompleteRespawn()
+    {
+        respawning = false;
+        respawnCurrentTime = 0;
+        TargetCompleteRespawn(respawnLocation);
+        RpcCompleteRespawn();
+    }
+
+    [TargetRpc]
+    void TargetCompleteRespawn(Vector3 respawnLocation)
+    {
+        playerMovement.characterController.enabled = true;
+        transform.position = respawnLocation;
+    }
+
+    [ClientRpc]
+    void RpcCompleteRespawn()
+    {
+        ghostMeshRenderer.enabled = true;
     }
 
     [Command]
@@ -279,6 +368,16 @@ public class PlayerManager : NetworkBehaviour
     [Server]
     public void ServerCompletePossession(CursableObject cursableObject) 
     {
+        if (cursableObject)
+        {
+            cursableObject.possessingPlayer = this;
+        }
+        else
+        {
+            if (possessedObject)
+                possessedObject.possessingPlayer = null;
+        }
+
         RpcCompletePossession(cursableObject);
     }
 
@@ -328,5 +427,55 @@ public class PlayerManager : NetworkBehaviour
     void RpcCompleteCursing(CursableObject possessedObject)
     {
         possessedObject.PlayCursedAnimation();
+    }
+
+    [Server]
+    public void ServerStartInspection(CursableObject cursableObject)
+    {
+
+
+        if (inspecting) 
+        { 
+            ServerStopInspection();
+            return;
+        }
+
+        //turn lantern off maybe
+        inspecting = true;
+        tryingToInspectObject = cursableObject;
+        TargetStartStopInspection(true);
+    }
+
+    [Server]
+    void ServerStopInspection()
+    {
+        //turn lantern on maybe
+        inspectionCurrentTime = 0;
+        inspecting = false;
+        tryingToInspectObject = null;
+        TargetStartStopInspection(false);
+    }
+
+    [TargetRpc]
+    void TargetStartStopInspection(bool start)
+    {
+        playerMovement.characterController.enabled = !start;
+    }
+
+    [Server]
+    void ServerCompleteInspection(CursableObject cursableObject)
+    {
+        //check if the object is being possessed and force unpossess it
+        if (cursableObject.possessingPlayer)
+        {
+            cursableObject.possessingPlayer.ServerEvictPossessingGhost();
+        }
+    }
+
+    [Server]
+    public void ServerEvictPossessingGhost()
+    {
+        possessedObject.possessingPlayer = null;
+        RpcCompletePossession(null);
     }
 }

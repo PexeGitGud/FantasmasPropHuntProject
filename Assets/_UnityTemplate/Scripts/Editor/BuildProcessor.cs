@@ -154,6 +154,8 @@ namespace Unity.Template.Multiplayer.NGO.Editor
         void RevertChangesToMetagameApplication()
         {
             MetagameApplication app = FindMetagameAppInProject();
+            if (!app) return;
+
             //add your code to revert changes to the MetagameApplication here, I.E: to reference different testing environments
             PrefabUtility.SavePrefabAsset(app.gameObject, out bool savedSuccessfully);
             if (!savedSuccessfully)
