@@ -51,7 +51,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 10753326e6da4cb4b87bfe538d14f132, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 849d9ecae0745494d9d4f9e44b7268f5, type: 2}
+      objectReference: {fileID: 2100000, guid: 44f9854c854c0b742bb0294e422dc8ab, type: 2}
     - target: {fileID: 919132149155446097, guid: 10753326e6da4cb4b87bfe538d14f132, type: 3}
       propertyPath: m_Name
       value: Cabinet
